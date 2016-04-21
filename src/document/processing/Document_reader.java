@@ -13,18 +13,20 @@ import javax.swing.JFileChooser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.pdfbox.tools.PDFText2HTML;
 
 public class Document_reader {
     
-    //private File file;
-    Vector token =new Vector();
+   
+    Vector token =new Vector();//could have used ArrayList as recommended by javadocs but I was used to this 
+    ArrayList token1= new ArrayList();
     
     public File selectFile()
    {
@@ -42,6 +44,7 @@ public class Document_reader {
     
     // This method reads a file, creates tokens (i.e single word) and print them
     // Currently it only excepts .txt file 
+    
     public void tokenizeDocument(File file) throws FileNotFoundException, IOException
     {     
         //String to store the file extension
@@ -51,7 +54,7 @@ public class Document_reader {
     if("txt".equals(ext))
     {
          Scanner s=new Scanner(file);
-       // s.useDelimiter("/\\w+/g");
+         s.useDelimiter(Pattern.compile("\\s|\\.|,"));
         
         int i=0;
         while(s.hasNext())
@@ -61,13 +64,14 @@ public class Document_reader {
         }
         
         for(int j=0;j<i;j++)
-            System.out.println(token.elementAt(j)+", ");
+            System.out.println(token.elementAt(j));
         
         System.out.printf("\nThe total number of tokens are :%d ",i);
     }
     
+   
     else if("pdf".equals(ext))
-    {
+    {       
             try (PDDocument document = PDDocument.load(file)) {
                 PDFTextStripper textstripper= new PDFTextStripper();
                 String str= textstripper.getText(document);
