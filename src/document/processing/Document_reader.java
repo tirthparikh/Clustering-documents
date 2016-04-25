@@ -11,24 +11,22 @@ package document.processing;
  */
 import javax.swing.JFileChooser;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 
 public class Document_reader {
 
-    public static final String[] SPECIAL = new String[]{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "{", "]", "}", "\\\\", "|", ";", ":", "'", "\"", ",", "<", ".", ">", "/", "?", "~", "`"};
-    public static final char[] SPECIAL_CHARS = new char[]{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '|', ';', ':', '\'', ',', '<', '.', '>', '/', '?', '~', '`', '±', '°', '“', '®', '?'};
-
-    public static boolean isSpecial(char val) {
+    private static final String[] SPECIAL = new String[]{"!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "=", "+", "[", "{", "]", "}", "\\\\", "|", ";", ":", "'", "\"", ",", "<", ".", ">", "/", "?", "~", "`"};
+    private static final char[] SPECIAL_CHARS = new char[]{'!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', '|', ';', ':', '\'', ',', '<', '.', '>', '/', '?', '~', '`', '±', '°', '“', '®', '?'};
+    private static List<String> token;
+    private static int num_of_tokens;
+    
+    private static boolean isSpecial(char val) {
         return isSpecial(String.valueOf(val));
     }
 
@@ -36,7 +34,7 @@ public class Document_reader {
      * @param val
      * @return {@link Boolean}
      */
-    public static boolean isSpecial(String val) {
+    private static boolean isSpecial(String val) {
         for (String tmp : SPECIAL) {
             if (val.equals(tmp)) {
                 return true;
@@ -45,14 +43,14 @@ public class Document_reader {
         return false;
     }
 
-    public File selectFile() {
+    static File selectFile() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
         fileChooser.showOpenDialog(fileChooser);
         return new File(fileChooser.getSelectedFile().getAbsolutePath());
     }
 
-    public void printpath(File file) {
+    public static void printpath(File file) {
         System.out.println("The path of the file you selected is " + file.getPath());
     }
 
@@ -102,7 +100,7 @@ public class Document_reader {
 //            System.out.println("Please upload only .txt files for now.\n Sorry for the limitations to the file types, We are updating ourselves");
 //        }
 //    }
-    public List<String> process(String input) throws BusinessException {
+    private static List<String> process(String input) throws BusinessException {
         List<String> tokens = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
@@ -282,13 +280,13 @@ public class Document_reader {
         return tokens;
     }
 
-    protected void addToken(List<String> tokens, String text) {
+    protected static void addToken(List<String> tokens, String text) {
         if (!text.isEmpty()) {
             tokens.add(text);
         }
     }
 
-    protected void addToken(List<String> tokens, StringBuilder buffer) {
+    protected static void addToken(List<String> tokens, StringBuilder buffer) {
         if (null != buffer && 0 != buffer.length()) {
             addToken(tokens, buffer.toString().trim());
         }
@@ -301,10 +299,10 @@ public class Document_reader {
      * @throws IOException
      * @throws BusinessException
      */
-    public  List<String> tokenizeDocument(File file) throws IOException, BusinessException {
+    public static  List<String> tokenizeDocument(File file) throws IOException, BusinessException {
        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         String ext = FilenameUtils.getExtension(file.getName());
-        List<String> tokens;
+        
         if("txt".equals(ext))
         {
             try (Scanner s = new Scanner(file)) {
@@ -314,13 +312,14 @@ public class Document_reader {
                     str= str.concat(s.next()+" ");
                 }
                 
-                tokens=process(str);
-                for (int j = 0; j < tokens.size(); j++) {
-                    System.out.println(tokens.get(j));
+                token=process(str);
+                for (int j = 0; j < token.size(); j++) {
+                    System.out.println(token.get(j));
                 }
-
+                
                 //System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
-                return tokens;
+                num_of_tokens=token.size();
+                return token;
             }
         }
         else if("pdf".equals(ext))
@@ -328,15 +327,16 @@ public class Document_reader {
             try (PDDocument document = PDDocument.load(file)) {
                 PDFTextStripper textstripper = new PDFTextStripper();
                 String str = textstripper.getText(document);
-                tokens=process(str);
+                token=process(str);
                 
-                for (int j = 0; j < tokens.size(); j++) {
-                    System.out.println(tokens.get(j));
+                for (int j = 0; j < token.size(); j++) {
+                    System.out.println(token.get(j));
                 }
 
                // System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
                 document.close();
-                return tokens;
+                num_of_tokens=token.size();
+                return token;
             }
         
         }

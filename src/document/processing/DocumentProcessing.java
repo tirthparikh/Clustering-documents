@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package document.processing;
 
 import java.io.File;
@@ -10,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Vector;
 
 /**
  *
@@ -18,105 +13,100 @@ import java.util.Vector;
  */
 public class DocumentProcessing {
 
-    /**
-     * @param args the command line arguments
-     * @throws java.io.FileNotFoundException
-     * @throws document.processing.BusinessException
-     */
-    public static void main(String[] args) throws FileNotFoundException, IOException, BusinessException {
+    
+    public static void main(String[] args) throws FileNotFoundException, IOException, BusinessException, InterruptedException {
         
-        ArrayList<File> listOfDocuments=new ArrayList<>();
-        Document_reader documents=new Document_reader();
+        ArrayList<Documents> listOfDocuments=new ArrayList<>();
+        //Document_reader documents=new Document_reader();
+        
+        
         System.out.println("Hello, enter to Y start clustering your documents or N to exit :");
         Scanner s = new Scanner(System.in);
         String s1=s.nextLine();
         
-        if ("y".equals(s1) || "Y".equals(s1)) 
-        {   
+        //Case 1: The user entered Y or y
+        if ("y".equals(s1) || "Y".equals(s1)) {
             
-            System.out.println("\n\nCurrently you can only upload at most 10 documents.\nAlso, please upload only pdf or txt files.\nThank you. ");
+            //Warning Message for the limitations of the document
+            System.out.println("\n\nCurrently you can only upload at most 25 documents."
+                                +"\nAlso, please upload only pdf or txt files."
+                                +"\nThank you. ");
             
+            //Just a 2 second pause to let user read warning
             try {
-                    Thread.sleep(2000);                 //1000 milliseconds is one second.
-                }
-            catch(InterruptedException ex) 
-            {
-                    Thread.currentThread().interrupt();
+                Thread.sleep(2000);                 //1000 milliseconds is one second.
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
             }
             
-            for (int i = 0; i < 10; i++) 
-            {
-                
-               
-                
+            
+            //for loop to let user entered upto 25 documents
+            for (int i = 0; i < 25; i++) {
+
                 System.out.println("\n\nEnter y to upload a document and n to stop : ");
-                   
-                    s1=s.nextLine();
-                    
+                s1 = s.nextLine();
+
                 
-                if ("y".equals(s1) ||"Y".equals(s1)) 
-                {   
-                     
+                if ("y".equals(s1) || "Y".equals(s1)) {
+
                     //add the document to the pool of documents
-                    listOfDocuments.add(i,documents.selectFile());//new changes 
+                    listOfDocuments.add(i, new Documents(Document_reader.selectFile()));//new changes 
                     System.out.println("Document added");
-                    if (i == 9) 
-                {
-                    System.out.println("You have uploaded 10 documents \nEnter s to start k-means clustering:  ");
-                   
-                    s1=s.nextLine();
-                    
-                    if ("s".equals(s1)||"S".equals(s1)) 
-                    {   
-                        //start k-means clustering
-                        System.out.println("Clustering starts");
-                        Kmeans.createCluster(listOfDocuments);
+                    if (i == 24) {
+                        System.out.println("You have uploaded 25 documents,you cannot enter more for the time being. "
+                                       + "\nEnter s to start k-means clustering:  ");
+
+                        s1 = s.nextLine();
+
+                        if ("s".equals(s1) || "S".equals(s1)) {
+                            //start k-means clustering
+                            System.out.println("Clustering starts");
+                            Kmeans k=new Kmeans(listOfDocuments);
+                            k.createCluster();
+                        }
                     }
-                }
-                }
-                
-                else if ("N".equals(s1) ||"n".equals(s1))
-                {
-                    System.out.printf("\nYou have uploaded %d documents",i);
-                
-                    if (i == 0) 
-                    {
+                } else if ("N".equals(s1) || "n".equals(s1)) {
+                    System.out.printf("\nYou have uploaded %d documents", i);
+
+                    if (i == 0) {
                         System.out.println("\nPlease upload atleast one or atmost 10 documents to do the clustering");
-                    }
-                    else
-                    {
+                    } else {
                         System.out.println("Press s to start k-means clustering:  ");
-                        
-                       
-                        s1=s.nextLine();
-                       
-                        if ("s".equals(s1)||"S".equals(s1)) 
-                        {   
-                        //start k-means clustering
-                        System.out.println("Clustering starts");
-                        Kmeans.createCluster(listOfDocuments);
-                        
+
+                        s1 = s.nextLine();
+
+                        if ("s".equals(s1) || "S".equals(s1)) {
+                            //start k-means clustering
+                            System.out.println("Clustering starts");
+                           Kmeans k=new Kmeans(listOfDocuments);
+                            k.createCluster();
+
                         }
 
                     }
-                    
+
                     break;
-                }
-                else 
-                {   
+                } else {
                     System.out.println("You have entered " + s1 + ".Please enter y or n for uploading document.\n Thank you!");
                 }
             }
         }
-        else if (s1=="n"||s1=="N")
+        
+        //Case 2: The user entered n or N
+        else if ("n".equals(s1)||"N".equals(s1))
         {  
             System.exit(0);
         }
+        
+        //Case 3: The user Entered something other than Y or N
         else
         {
-            
-            System.out.println("You have entered "+s1+".\nEnter Y to start clustering your documents or N to exit:");
+           
+            for(int k=0;k<100;k++)
+                System.out.println("\n");
+            System.out.println("You have entered "+s1+"");
             DocumentProcessing.main(args);
+            System.exit(0);
         }
 
     }
