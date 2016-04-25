@@ -63,6 +63,9 @@ public class Documents {
         docVector.add(TF_IDF);
     }
     
-   
+    ArrayList<Double> getVector()
+    {
+        return docVector;
+    }
     
 }
