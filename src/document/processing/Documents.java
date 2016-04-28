@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -21,7 +20,9 @@ public class Documents {
     
     private final File file;
     private final List<String> tokens;
-    private ArrayList<Double> docVector;
+    private ArrayList<Double> docVector=new ArrayList<>();
+    private ArrayList<Double> unitVector=new ArrayList<>();
+    
     public Documents(File file1) throws IOException, BusinessException
     {   
         
@@ -51,8 +52,8 @@ public class Documents {
 
     double countOccurences(String get) {
        int count = 0;
-        for (String token : tokens) {
-            if (get == token) {
+        for (int x=0;x<tokens.size();x++) {
+            if (get.equals(tokens.get(x))) {
                 count++;
             }
         }
@@ -67,5 +68,31 @@ public class Documents {
     {
         return docVector;
     }
+    
+    void normalized_Vector()
+    {
+        double squaredSum=0;
+    if(!docVector.isEmpty())
+    {   
+        
+        for(int d=0;d<docVector.size();d++)
+        {
+            squaredSum+=(docVector.get(d)*docVector.get(d));
+        }
+        
+        squaredSum=Math.sqrt(squaredSum);
+    
+        for(int d=0;d<docVector.size();d++)
+        {
+            unitVector.add(d,docVector.get(d)/squaredSum);
+        }
+    }
+   
+    }
+
+    ArrayList<Double> getUnitVector() {
+       return unitVector;
+    }
+    
     
 }

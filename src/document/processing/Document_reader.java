@@ -282,7 +282,14 @@ public class Document_reader {
 
     protected static void addToken(List<String> tokens, String text) {
         if (!text.isEmpty()) {
-            tokens.add(text);
+            String[] a;                 //Changes made in here
+            if(text.contains("\n")) {
+                a=text.split("\n");
+                for(int q=0;q<a.length;q++)
+                {   if(a[q].contains("\r"))
+                        a[q]=a[q].replace("\r", "");
+                    tokens.add(a[q].toUpperCase());}
+            } else tokens.add(text.toUpperCase());
         }
     }
 
@@ -313,9 +320,9 @@ public class Document_reader {
                 }
                 
                 token=process(str);
-                for (int j = 0; j < token.size(); j++) {
-                    System.out.println(token.get(j));
-                }
+//                for (int j = 0; j < token.size(); j++) {
+//                    System.out.println(token.get(j));
+//                }
                 
                 //System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
                 num_of_tokens=token.size();
@@ -329,9 +336,9 @@ public class Document_reader {
                 String str = textstripper.getText(document);
                 token=process(str);
                 
-                for (int j = 0; j < token.size(); j++) {
-                    System.out.println(token.get(j));
-                }
+//                for (int j = 0; j < token.size(); j++) {
+//                    System.out.println(token.get(j));
+//                }
 
                // System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
                 document.close();
