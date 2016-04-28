@@ -16,7 +16,7 @@ import java.util.Random;
 public class Kmeans {
 
     public ArrayList<Documents> pool_of_Documents = new ArrayList<>();
-    private ArrayList<String> total_words = new ArrayList<>();
+    private final ArrayList<String> total_words = new ArrayList<>();
 
     public Kmeans(ArrayList<Documents> f) {
         pool_of_Documents = f;
@@ -146,18 +146,34 @@ public class Kmeans {
                 termsScore=total_words.get(i);
             for(int w=total_words.get(i).length();w<=25;w++)
                 termsScore=termsScore.concat(" ");
-            for(int c=0;c<pool_of_Documents.size();c++)
-                termsScore=termsScore.concat("    "+pool_of_Documents.get(c).countOccurences(total_words.get(i))+"  ");
 //            for(int c=0;c<pool_of_Documents.size();c++)
-//                termsScore=termsScore.concat("    "+pool_of_Documents.get(c).getVector().get(i).toString()+"  ");
+//                termsScore=termsScore.concat("    "+pool_of_Documents.get(c).countOccurences(total_words.get(i))+"  ");
+            for(int c=0;c<pool_of_Documents.size();c++)
+                termsScore=termsScore.concat("    "+pool_of_Documents.get(c).getVector().get(i).toString()+"  ");
             System.out.println(termsScore);
         }
 
     }
 
     private void start_K_means(ArrayList<Documents> pool_of_Documents, int cardinality2) {
-       ArrayList<Centroid> centroids= new ArrayList<>();
+       ArrayList<Centroid> centroids;
+       //Place random cluster centroids
        centroids=calculate_random_initial_centroids(pool_of_Documents,cardinality2);
+       //Assign each object to the closet centroid
+       for(int pod=0;pod<pool_of_Documents.size();pod++)
+       {   
+           double distance[]=new double[cardinality2];
+           for(int cluster=0;cluster<cardinality2;cluster++)
+           {
+               distance[cluster]=Edistance(centroids.get(cluster),pool_of_Documents.get(pod).getUnitVector());
+           }
+           int index= closest_centroid(distance);
+           centroids.get(index).AssignDocumentToCentroid(pool_of_Documents.get(pod));
+           
+       }
+       
+       //recompute the centroids
+       
        
     }
     
@@ -232,6 +248,18 @@ public class Kmeans {
             if(Math.random()<distance[prob])
                 break;
         return new Centroid(pool_of_Documents.get(prob).getUnitVector());
+    }
+
+    private int closest_centroid(double[] distance) {
+       int index=0;
+       
+        for (int i = 1; i < distance.length; i++) 
+        {
+            if(distance[i-1]>distance[i])
+                index=i;
+        }
+        
+        return index;
     }
 
 
