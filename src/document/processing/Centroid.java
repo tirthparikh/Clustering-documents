@@ -14,10 +14,11 @@ import java.util.ArrayList;
 public class Centroid {
     private ArrayList<Double> points= new ArrayList<>();
     private ArrayList<Documents> docs= new ArrayList<>();
-    
+    private ArrayList<Double> newpoints= new ArrayList<>();
     public Centroid(ArrayList<Double> set_points)
     {
         points.addAll(set_points);
+        newpoints=points;
     }
 
     ArrayList<Double> getpoints() {
@@ -39,4 +40,28 @@ public class Centroid {
         points=new ArrayList<>();
         points.addAll(set_points);
     }
+    
+    ArrayList<Documents> getdocs()
+    {
+        return docs;
+    }
+
+    void setnewPoints(ArrayList<Double> temp) {
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        newpoints=new ArrayList<>();
+        newpoints.addAll(temp);
+    
+    }
+    
+    boolean compareCentroidPoints()
+    {
+       return points.equals(newpoints);
+    }
+    
+    void replaceOldPointsWithNew()
+    {
+        points=newpoints;
+        newpoints=null;
+    }
+    
 }

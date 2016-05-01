@@ -17,7 +17,7 @@ public class Kmeans {
 
     public ArrayList<Documents> pool_of_Documents = new ArrayList<>();
     private final ArrayList<String> total_words = new ArrayList<>();
-
+    ArrayList<Centroid> centroids=new ArrayList<>();
     public Kmeans(ArrayList<Documents> f) {
         pool_of_Documents = f;
     }
@@ -27,12 +27,12 @@ public class Kmeans {
         calculate_total_words();
         doc_to_vec();
         print_TFIDF();
-//        for(int cardinality=3;cardinality<=10;cardinality++)
-//        {
-//            start_K_means(pool_of_Documents,cardinality);
-//            
-//        }
-
+        for(int cardinality=3;cardinality<=10;cardinality++)
+        {
+            start_K_means(pool_of_Documents,cardinality);
+            
+        }
+        
     }
 //{       List<String>[] tokens=new List[pool_of_Documents.size()];
 //        
@@ -156,10 +156,23 @@ public class Kmeans {
     }
 
     private void start_K_means(ArrayList<Documents> pool_of_Documents, int cardinality2) {
-       ArrayList<Centroid> centroids;
+        
        //Place random cluster centroids
        centroids=calculate_random_initial_centroids(pool_of_Documents,cardinality2);
-       //Assign each object to the closet centroid
+       
+        
+      
+       
+      do
+      {
+        for (int i = 0; i < centroids.size(); i++) 
+        {
+         //Clearing the list of previously assigned documents , if any.
+         centroids.get(i).clearlistOfDoc();
+         centroids.get(i).replaceOldPointsWithNew();
+        }
+        
+        //Assign each object to the closet centroid
        for(int pod=0;pod<pool_of_Documents.size();pod++)
        {   
            double distance[]=new double[cardinality2];
@@ -169,12 +182,26 @@ public class Kmeans {
            }
            int index= closest_centroid(distance);
            centroids.get(index).AssignDocumentToCentroid(pool_of_Documents.get(pod));
-           
        }
        
        //recompute the centroids
-       
-       
+       for(int cluster=0;cluster<centroids.size();cluster++)    //for every centroid
+       {    
+           ArrayList<Double> temp= new ArrayList<>();
+           for(int t=0;t<centroids.get(cluster).getpoints().size();t++) //for every component of centroid
+           {    
+               double a=0;
+               for(int b=0;b<centroids.get(cluster).getdocs().size();b++)   //for every document in the cetroid
+               {
+                   a+=centroids.get(cluster).getdocs().get(b).getUnitVector().get(t);
+               }
+               a/=centroids.get(cluster).getpoints().size();
+               temp.add(a);
+            }
+           //set new centroid
+           centroids.get(cluster).setnewPoints(temp);
+        }
+      }while(!nochange());
     }
     
     
@@ -260,6 +287,17 @@ public class Kmeans {
         }
         
         return index;
+    }
+
+    private boolean nochange() {
+       int count=0;
+        for(int v=0;v<centroids.size();v++)
+        {   //int count=0;
+            if(!centroids.get(v).compareCentroidPoints())
+                count++;
+            
+        }
+    return count==0;    
     }
 
 
