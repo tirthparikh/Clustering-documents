@@ -306,6 +306,7 @@ public class Document_reader {
      * @throws IOException
      * @throws BusinessException
      */
+    @SuppressWarnings(value = "unchecked")
     public static  List<String> tokenizeDocument(File file) throws IOException, BusinessException {
        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         String ext = FilenameUtils.getExtension(file.getName());
