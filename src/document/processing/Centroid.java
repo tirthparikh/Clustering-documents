@@ -20,7 +20,8 @@ public class Centroid {
     public Centroid(ArrayList<Double> set_points)
     {
         points.addAll(0,set_points);
-        newpoints=points;
+        //newpoints=points;
+        newpoints.addAll(0,set_points);
     }
 
     ArrayList<Double> getpoints() {
