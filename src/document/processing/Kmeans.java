@@ -4,11 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 /**
  *
  * @author tirth_parikh
@@ -17,12 +13,12 @@ public class Kmeans {
 
     public ArrayList<Documents> pool_of_Documents = new ArrayList<>();
     private final ArrayList<String> total_words = new ArrayList<>();
-    ArrayList<Centroid> centroids=new ArrayList<>();
+    private ArrayList<Centroid> centroids=new ArrayList<>();
     public Kmeans(ArrayList<Documents> f) {
         pool_of_Documents = f;
     }
 
-    public void createCluster() throws IOException, BusinessException, Exception {
+    public void createCluster(int K) throws IOException, BusinessException, Exception {
         
         calculate_total_words();
         doc_to_vec();
@@ -32,7 +28,7 @@ public class Kmeans {
 //            start_K_means(pool_of_Documents,cardinality);
 //            
 //        }
-        start_K_means(pool_of_Documents,3);
+        start_K_means(pool_of_Documents,K);
         
     }
 //{       List<String>[] tokens=new List[pool_of_Documents.size()];
@@ -159,13 +155,14 @@ public class Kmeans {
     private void start_K_means(ArrayList<Documents> pool_of_Documents, int cardinality2) throws Exception {
         
        //Place random cluster centroids
-       //centroids=calculate_random_initial_centroids(pool_of_Documents,cardinality2);
-       for(int y=0;y<cardinality2;y++)
-           centroids.add(y,new Centroid(pool_of_Documents.get(y).getUnitVector()));
-        
+       centroids=calculate_random_initial_centroids(pool_of_Documents,cardinality2);
+//       for(int y=0;y<cardinality2;y++)
+//           centroids.add(y,new Centroid(pool_of_Documents.get(y).getUnitVector()));
+//        
       
        
-      for(int iteration=0;iteration<10;iteration++){
+      for(int iteration=0;iteration<cardinality2*3;iteration++)
+      {
         for (int i = 0; i < centroids.size(); i++) 
         {
          //Clearing the list of previously assigned documents , if any.
@@ -204,6 +201,8 @@ public class Kmeans {
            centroids.get(cluster).setnewPoints(temp);
         }
        }
+       if(nochange())
+           break;
       }//while(!nochange());
       
       for(int clusters=0;clusters<centroids.size();clusters++)
@@ -223,46 +222,46 @@ public class Kmeans {
     
     
     //Kmeans++
-//    private ArrayList<Centroid> calculate_random_initial_centroids(ArrayList<Documents> pool_of_Documents,int cardinality1) {
-//        //Implementing Kmeans++ for initial seeding
-//        
-//        ArrayList<Centroid> initial_centroids= new ArrayList<>();
-//        double[] distance = new double[pool_of_Documents.size()];
-//        //step1:Choose one center uniformly at random from among the data points
-//        initial_centroids.add(0, random_data_point());
-//        //step4:Repeat Steps 2 and 3 until k centers have been chosen
-//        for(int k=1;k<cardinality1;k++){
-//        //step2:For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen
-//        for(int datapoints=0;datapoints<pool_of_Documents.size();datapoints++)
-//        {
-//            distance[datapoints]=Edistance(initial_centroids.get(k-1),pool_of_Documents.get(datapoints).getUnitVector());
-//        }
-//        //step3:Choose one new data point at random as a new center, using a weighted probability distribution where a point x is chosen with probability proportional to D(x)^2.
-//        //storing probabilities in place of distance
-//        double sum=0;
-//                for(int datapoints=0;datapoints<distance.length;datapoints++)
-//                    sum+=(distance[datapoints]*distance[datapoints]);
-//                for(int datapoints=0;datapoints<distance.length;datapoints++)
-//                    distance[datapoints]=(distance[datapoints]*distance[datapoints])/sum;
-//        //choosing new datapoint
-//              Centroid cq= probable_datapoints(distance);
-//            int count = 0;
-//              for(int s=0;s<initial_centroids.size();s++)
-//                  if(initial_centroids.get(s).equals(cq))
-//                      count++;
-//              if(count==0)
-//                  initial_centroids.add(k, cq);
-//              else 
-//                  k--;
-//              
-//        }
-//   return initial_centroids;
-//    }
+    private ArrayList<Centroid> calculate_random_initial_centroids(ArrayList<Documents> pool_of_Documents,int cardinality1) {
+        //Implementing Kmeans++ for initial seeding
+        
+        ArrayList<Centroid> initial_centroids= new ArrayList<>();
+        double[] distance = new double[pool_of_Documents.size()];
+        //step1:Choose one center uniformly at random from among the data points
+        initial_centroids.add(0, random_data_point());
+        //step4:Repeat Steps 2 and 3 until k centers have been chosen
+        for(int k=1;k<cardinality1;k++){
+        //step2:For each data point x, compute D(x), the distance between x and the nearest center that has already been chosen
+        for(int datapoints=0;datapoints<pool_of_Documents.size();datapoints++)
+        {
+            distance[datapoints]=Edistance(initial_centroids.get(k-1),pool_of_Documents.get(datapoints).getUnitVector());
+        }
+        //step3:Choose one new data point at random as a new center, using a weighted probability distribution where a point x is chosen with probability proportional to D(x)^2.
+        //storing probabilities in place of distance
+        double sum=0;
+                for(int datapoints=0;datapoints<distance.length;datapoints++)
+                    sum+=(distance[datapoints]*distance[datapoints]);
+                for(int datapoints=0;datapoints<distance.length;datapoints++)
+                    distance[datapoints]=(distance[datapoints]*distance[datapoints])/sum;
+        //choosing new datapoint
+              Centroid cq= probable_datapoints(distance);
+            int count = 0;
+              for(int s=0;s<initial_centroids.size();s++)
+                  if(initial_centroids.get(s).equals(cq))
+                      count++;
+              if(count==0)
+                  initial_centroids.add(k, cq);
+              else 
+                  k--;
+              
+        }
+   return initial_centroids;
+    }
 
     private Centroid random_data_point() {
         Random randomGenerator= new Random();
         int index=randomGenerator.nextInt(pool_of_Documents.size());
-        return new Centroid(pool_of_Documents.get(index).getUnitVector());
+        return new Centroid(new ArrayList<>(pool_of_Documents.get(index).getUnitVector()));
     }
 
     private double Edistance(Centroid get, ArrayList<Double> unitVector) {
@@ -317,24 +316,26 @@ public class Kmeans {
             if(centroids.get(v).compareCentroidPoints())
                 count+=0;
             else
+            {   
                 count++;
-            
+                break;
+            }
         }
     return count==0;    
     }
 
 
-     private ArrayList<Centroid> calculate_random_initial_centroids(ArrayList<Documents> pool_of_Documents,int cardinality1)
-     {
-         
-     ArrayList<Centroid> initial_centroids= new ArrayList<>();
-     for(int card=0;card<cardinality1;card++)
-     {
-        ArrayList<Double> points=new ArrayList<>();
-        for(int compsize=0;compsize<total_words.size();compsize++)
-        {points.add(compsize,Math.random()/10000);}
-        initial_centroids.add(card, new Centroid(points));
-     }
-     return initial_centroids;
-     }
+//     private ArrayList<Centroid> calculate_random_initial_centroids(ArrayList<Documents> pool_of_Documents,int cardinality1)
+//     {
+//         
+//     ArrayList<Centroid> initial_centroids= new ArrayList<>();
+//     for(int card=0;card<cardinality1;card++)
+//     {
+//        ArrayList<Double> points=new ArrayList<>();
+//        for(int compsize=0;compsize<total_words.size();compsize++)
+//        {points.add(compsize,Math.random());}
+//        initial_centroids.add(card, new Centroid(points));
+//     }
+//     return initial_centroids;
+//     }
 }
