@@ -22,56 +22,10 @@ public class Kmeans {
         
         calculate_total_words();
         doc_to_vec();
-       // print_TFIDF();
-//        for(int cardinality=1;cardinality<=10;cardinality++)
-//        {
-//            start_K_means(pool_of_Documents,cardinality);
-//            
-//        }
+       
         start_K_means(pool_of_Documents,K);
         
     }
-//{       List<String>[] tokens=new List[pool_of_Documents.size()];
-//        
-//        Kmeans k=new Kmeans();
-//            
-//            
-//            //Create tokens from every document
-//            for (int i=0;i<pool_of_Documents.size();i++)
-//                {
-//                    try 
-//                        {
-//                        
-//                            tokens[i]=Document_reader.tokenizeDocument(pool_of_Documents.get(i).getFile());
-//                            //System.out.println(pool_of_Documents.get(i).getName());
-//                        }
-//                    catch (BusinessException ex)
-//                        {
-//                            Logger.getLogger(Kmeans.class.getName()).log(Level.SEVERE, null, ex);
-//                        }
-//                    //Create a list of total individual terms
-//                    for(int j=0;j<tokens[i].size();j++)
-//                    {
-//                        if(!k.total_words.contains(tokens[i].get(j)))
-//                        {
-//                            k.total_words.add(tokens[i].get(j));
-//                        }
-//                    
-//                    }
-//                   
-//                    for (String total_word : k.total_words) 
-//                    {
-//                        System.out.println(total_word);
-//                    }
-//                    
-//                    System.out.println("Length of total words = "+k.total_words.size());
-//                }
-//            
-//}
-//
-//    public Kmeans() {
-//        this.total_words = new ArrayList<>();
-//    }
 
     void calculate_total_words() throws IOException, BusinessException {
         for (int i = 0; i < pool_of_Documents.size(); i++) {
@@ -143,8 +97,6 @@ public class Kmeans {
                 termsScore=total_words.get(i);
             for(int w=total_words.get(i).length();w<=25;w++)
                 termsScore=termsScore.concat(" ");
-//            for(int c=0;c<pool_of_Documents.size();c++)
-//                termsScore=termsScore.concat("    "+pool_of_Documents.get(c).countOccurences(total_words.get(i))+"  ");
             for(int c=0;c<pool_of_Documents.size();c++)
                 termsScore=termsScore.concat("    "+pool_of_Documents.get(c).getVector().get(i).toString()+"  ");
             System.out.println(termsScore);
@@ -156,11 +108,7 @@ public class Kmeans {
         
        //Place random cluster centroids
        centroids=calculate_random_initial_centroids(pool_of_Documents,cardinality2);
-//       for(int y=0;y<cardinality2;y++)
-//           centroids.add(y,new Centroid(pool_of_Documents.get(y).getUnitVector()));
-//        
-      
-       
+   
       for(int iteration=0;iteration<cardinality2*3;iteration++)
       {
         for (int i = 0; i < centroids.size(); i++) 
@@ -323,19 +271,3 @@ public class Kmeans {
         }
     return count==0;    
     }
-
-
-//     private ArrayList<Centroid> calculate_random_initial_centroids(ArrayList<Documents> pool_of_Documents,int cardinality1)
-//     {
-//         
-//     ArrayList<Centroid> initial_centroids= new ArrayList<>();
-//     for(int card=0;card<cardinality1;card++)
-//     {
-//        ArrayList<Double> points=new ArrayList<>();
-//        for(int compsize=0;compsize<total_words.size();compsize++)
-//        {points.add(compsize,Math.random());}
-//        initial_centroids.add(card, new Centroid(points));
-//     }
-//     return initial_centroids;
-//     }
-}
