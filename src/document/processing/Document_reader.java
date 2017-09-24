@@ -56,50 +56,7 @@ public class Document_reader {
 
     // This method reads a file, creates tokens (i.e single word) and print them
     // Currently it only excepts .txt file 
-//    public void tokenizeDocument(File file) throws FileNotFoundException, IOException {
-//        
-//        //String to store the file extension
-//        
-//        String ext = FilenameUtils.getExtension(file.getName());
-//        Vector token = new Vector();//could have used ArrayList as recommended by javadocs but I was used to this 
-//        if ("txt".equals(ext)) {
-//            Scanner s = new Scanner(file);
-//            s.useDelimiter(Pattern.compile("\\s|\\.|,"));
-//
-//            int i = 0;
-//            while (s.hasNext()) {
-//                token.add(i, s.next());
-//                i++;
-//            }
-//
-//            for (int j = 0; j < i; j++) {
-//                System.out.println(token.elementAt(j));
-//            }
-//
-//            System.out.printf("\nThe total number of tokens are :%d ", i);
-//        } else if ("pdf".equals(ext)) {
-//            try (PDDocument document = PDDocument.load(file)) {
-//                PDFTextStripper textstripper = new PDFTextStripper();
-//                String str = textstripper.getText(document);
-//                // String[] ss = str.split("\\s\\ss\\ssss\\sss");
-//                int i = 0;
-//               // for(i=0;i<ss.length;i++)
-//                //   token.add(i,ss[i]);
-//                StringTokenizer st = new StringTokenizer(str);
-//                while (st.hasMoreTokens()) {
-//                    token.add(i++, st.nextToken());
-//                }
-//                for (int j = 0; j < i; j++) {
-//                    System.out.println(token.elementAt(j));
-//                }
-//
-//                System.out.printf("\nThe total number of tokens are :%d ", i);
-//                document.close();
-//            }
-//        } else {
-//            System.out.println("Please upload only .txt files for now.\n Sorry for the limitations to the file types, We are updating ourselves");
-//        }
-//    }
+
     private static List<String> process(String input) throws BusinessException {
         List<String> tokens = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -111,7 +68,7 @@ public class Document_reader {
             char current = arr[i];
             char next = (i + 1 < arr.length) ? arr[i + 1] : ' ';
 
-			// extract acronyms
+	    // extract acronyms
             // this will actually extract acronyms of any length
             // once it detects this pattern a.b.c 
             // it's a greedy lexer that breaks at ' '
@@ -321,11 +278,7 @@ public class Document_reader {
                 }
                 
                 token=process(str);
-//                for (int j = 0; j < token.size(); j++) {
-//                    System.out.println(token.get(j));
-//                }
-                
-                //System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
+
                 num_of_tokens=token.size();
                 return token;
             }
@@ -337,11 +290,7 @@ public class Document_reader {
                 String str = textstripper.getText(document);
                 token=process(str);
                 
-//                for (int j = 0; j < token.size(); j++) {
-//                    System.out.println(token.get(j));
-//                }
 
-               // System.out.printf("\nThe total number of tokens are :%d ", tokens.size());
                 document.close();
                 num_of_tokens=token.size();
                 return token;
